@@ -1,7 +1,5 @@
 from classes import *
 
-address_book = AddressBook()
-
 
 # декоратор для функцій, що працюють з даними вводу користувача
 def input_error(func):
@@ -51,20 +49,25 @@ def change(*args):
 def phone(*args):
     name = Name(args[0][0])
     if name.value in address_book.keys():
-        list_of_phones = address_book[name.value].phones
+        list_of_phones = [ph.value for ph in address_book[name.value].phones]
         return ', '.join(list_of_phones)
 
 
 def show_all(*args):
-    # # реалізація через записи в адресній книзі
-    # str_for_print = ''
-    # for k in address_book.values():
-    #     str_for_print += str(k) + '\n'
-    # return str_for_print
+    # реалізація через записи в адресній книзі
+    str_for_print = ''
+    for k in address_book.values():
+        str_for_print += str(k) + '\n'
+    return str_for_print
 
-    # реалізація через ітератор - НЕ ВИХОДИТЬ
-    block_for_print = address_book.iterator()
-    return block_for_print
+
+def show_block(*args):
+    # дані виводяться частинами
+    res = ''
+    for record in address_book.iterator():
+        res += record
+    return res
+
 
 def exit(*args):
     return "Good bye!"
@@ -77,7 +80,6 @@ def days_to_birthday(*args):
         return d_t_b
 
 
-
 COMMANDS = {
     hello: ("hello",),
     add: ("add",),
@@ -85,7 +87,8 @@ COMMANDS = {
     phone: ("phone",),
     show_all: ("show all",),
     exit: ("good bye", "close", "exit"),
-    days_to_birthday: ("days",) #для перевірки функції days_to_birthday класу Records користувач має написати ім'я та телефон в форматі 12.12.12
+    days_to_birthday: ("days",),  # для перевірки функції days_to_birthday класу Records користувач має написати ім'я та телефон в форматі 12.12.2012
+    show_block: ("show block",),  # для перевірки виводу з пагінацією
 }
 
 
@@ -109,4 +112,31 @@ def main():
 
 
 if __name__ == '__main__':
+    r1 = Record(Name("Billy"), Phone("663456789"))
+    r2 = Record(Name("Susanna"), Phone("987653434"), Birthday("06.25.1995"))
+    r3 = Record(Name("Jonny"), Phone("675433434"))
+
+    ab = AddressBook()
+
+    ab.add_record(r1)
+    ab.add_record(r2)
+    ab.add_record(r3)
+
+    print(r2.days_to_birthday())
+
+    print(r1.days_to_birthday())
+
+    print(ab)
+
+    for rec in ab.iterator():
+        print(rec)
+
+    for rec in ab.iterator(3):
+        print(rec)
+
+    for rec in ab.iterator(1):
+        print(rec)
+
+    address_book = AddressBook()
+
     main()
